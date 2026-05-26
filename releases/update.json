@@ -1,7 +1,7 @@
 {
   "versionCode": 2,
   "versionName": "1.0.1",
-  "apkUrl": "https://github.com/Gopyr/Vclass-App/releases/download/v1.0.1/app-debug.apk",
+  "apkUrl": "https://raw.githubusercontent.com/Gopyr/Vclass-App/main/releases/app-debug.apk",
   "mandatory": false,
   "changelog": [
     "Cek update sekarang membaca update.json dari GitHub",
