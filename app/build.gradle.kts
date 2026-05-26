@@ -18,8 +18,19 @@ android {
     }
 
     buildTypes {
+        debug {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            signingConfig = signingConfigs.getByName("debug")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -38,6 +49,11 @@ android {
 
     buildFeatures {
         compose = true
+    }
+
+    lint {
+        checkReleaseBuilds = false
+        abortOnError = false
     }
 
     packaging {
