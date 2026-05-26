@@ -1,0 +1,30 @@
+# Gradle / Android
+.gradle/
+build/
+*/build/
+local.properties
+
+# Android Studio
+.idea/
+*.iml
+
+# Kotlin / Java
+.kotlin/
+*.class
+
+# Generated APK/AAB outputs
+*.apk
+*.aab
+
+# Large JVM crash dumps
+*.hprof
+hs_err_pid*
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Signing secrets
+*.jks
+*.keystore
+keystore.properties
