@@ -7,6 +7,7 @@
 - Patch notes update ditampilkan dari `update.json`.
 - Tombol Download update diarahkan ke APK di GitHub Release.
 - Label versi di Settings sekarang mengikuti versi APK yang terpasang.
+- Remote config ditambahkan untuk rule quiz/forum yang bisa diubah tanpa upload APK.
 
 ## 1.0.0
 

@@ -1,0 +1,29 @@
+{
+  "configVersion": 1,
+  "quiz": {
+    "rangeMaxPatterns": [
+      "(?:-|–|to)\\s*([0-9]+(?:[.,][0-9]+)?)\\s*$"
+    ],
+    "closedTexts": [
+      "closed",
+      "close",
+      "no more attempts"
+    ],
+    "noQuestionsTexts": [
+      "no questions have been added",
+      "no questions"
+    ]
+  },
+  "forum": {
+    "readOnlyTexts": [
+      "cut-off date for posting",
+      "can no longer post"
+    ],
+    "showRepliesEvenIfClosed": true
+  },
+  "patchNotes": [
+    "Remote config aktif untuk rule quiz dan forum",
+    "Pola range nilai quiz bisa diubah dari JSON",
+    "Teks status quiz dan forum bisa disesuaikan tanpa upload APK"
+  ]
+}

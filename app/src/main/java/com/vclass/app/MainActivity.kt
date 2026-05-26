@@ -20,6 +20,7 @@ import androidx.navigation.compose.rememberNavController
 import com.vclass.app.data.local.SavedLogin
 import com.vclass.app.data.local.SettingsRepository
 import com.vclass.app.data.model.*
+import com.vclass.app.data.remote.RemoteConfigManager
 import com.vclass.app.data.repository.MoodleRepository
 import com.vclass.app.data.worker.DeadlineCheckWorker
 import com.vclass.app.ui.components.ErrorScreen
@@ -125,6 +126,10 @@ private fun AuthenticatedVClassApp(
 
     LaunchedEffect(isDarkMode) {
         viewModel.setDarkMode(isDarkMode)
+    }
+
+    LaunchedEffect(Unit) {
+        RemoteConfigManager.refresh()
     }
 
     VClassApp(viewModel, settingsRepo, onLogoutToLogin)

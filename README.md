@@ -19,3 +19,49 @@ Rencana update memakai GitHub Releases:
 - Metadata update disimpan di `releases/update.json`.
 - App membaca `update.json`, membandingkan `versionCode`, lalu menampilkan patch notes.
 
+## Remote Config
+
+Fix kecil untuk rule parser quiz/forum dapat dikirim lewat:
+
+```text
+releases/remote_config.json
+```
+
+Contoh yang bisa diubah tanpa upload APK:
+
+- pola range nilai quiz
+- teks status quiz tertutup
+- teks status quiz tanpa soal
+- teks forum read-only/cutoff
+- patch notes ringan yang tampil di Settings
+
+## Release Metadata
+
+Contoh struktur:
+
+```json
+{
+  "versionCode": 1,
+  "versionName": "1.0.0",
+  "apkUrl": "https://github.com/Gopyr/Vclass-App/releases/download/v1.0.0/app-debug.apk",
+  "mandatory": false,
+  "changelog": [
+    "Login native dan simpan akun",
+    "Grade quiz lebih akurat",
+    "Forum read-only"
+  ]
+}
+```
+
+## Build
+
+```powershell
+$env:JAVA_HOME='C:\Program Files\Android\Android Studio\jbr'
+.\gradlew.bat :app:assembleDebug
+```
+
+APK debug akan ada di:
+
+```text
+app/build/outputs/apk/debug/app-debug.apk
+```

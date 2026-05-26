@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
+import com.vclass.app.data.remote.RemoteConfigManager
 import com.vclass.app.ui.theme.*
 import androidx.compose.ui.text.font.FontWeight
 import kotlinx.coroutines.Dispatchers
@@ -49,6 +50,10 @@ fun SettingsScreen(
     var showUpdateInfo by remember { mutableStateOf(false) }
     var isCheckingUpdate by remember { mutableStateOf(false) }
     var updateResult by remember { mutableStateOf<UpdateCheckResult?>(null) }
+    var remoteConfigVersion by remember { mutableStateOf(RemoteConfigManager.current.configVersion) }
+    var remoteConfigNotes by remember { mutableStateOf(RemoteConfigManager.current.patchNotes) }
+    var isRefreshingConfig by remember { mutableStateOf(false) }
+    var remoteConfigMessage by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
         topBar = {
@@ -279,7 +284,27 @@ fun SettingsScreen(
                         }
                     }
                     Spacer(modifier = Modifier.height(12.dp))
-                    PatchNotesCard()
+                    RemoteConfigCard(
+                        version = remoteConfigVersion,
+                        message = remoteConfigMessage,
+                        isLoading = isRefreshingConfig,
+                        onRefresh = {
+                            coroutineScope.launch {
+                                isRefreshingConfig = true
+                                val result = RemoteConfigManager.refresh()
+                                result.onSuccess { config ->
+                                    remoteConfigVersion = config.configVersion
+                                    remoteConfigNotes = config.patchNotes
+                                    remoteConfigMessage = "Remote config berhasil diperbarui"
+                                }.onFailure { error ->
+                                    remoteConfigMessage = error.message ?: "Remote config gagal diperbarui"
+                                }
+                                isRefreshingConfig = false
+                            }
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    PatchNotesCard(remoteConfigNotes)
                 }
             }
 
@@ -559,7 +584,68 @@ private suspend fun checkForUpdate(currentVersionCode: Int): UpdateCheckResult {
 }
 
 @Composable
-private fun PatchNotesCard() {
+private fun RemoteConfigCard(
+    version: Int,
+    message: String?,
+    isLoading: Boolean,
+    onRefresh: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.65f))
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    Icons.Default.Tune,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        "Remote config",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        "Versi config: $version",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+            if (!message.isNullOrBlank()) {
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    message,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedButton(
+                onClick = onRefresh,
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !isLoading
+            ) {
+                if (isLoading) {
+                    CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Memperbarui config...")
+                } else {
+                    Icon(Icons.Default.CloudSync, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Refresh remote config")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PatchNotesCard(remoteNotes: List<String>) {
     Column {
         Text(
             "Patch info",
@@ -567,13 +653,15 @@ private fun PatchNotesCard() {
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(6.dp))
-        val notes = listOf(
-            "Login native dengan penyimpanan akun opsional",
-            "Grade quiz memakai nilai akhir dari grade report",
-            "Review quiz diurutkan dari Question 1 sampai selesai",
-            "Forum cutoff tampil read-only",
-            "Pengaturan update, patch info, dan logout ditambahkan"
-        )
+        val notes = remoteNotes.ifEmpty {
+            listOf(
+                "Login native dengan penyimpanan akun opsional",
+                "Grade quiz memakai nilai akhir dari grade report",
+                "Review quiz diurutkan dari Question 1 sampai selesai",
+                "Forum cutoff tampil read-only",
+                "Pengaturan update, patch info, dan logout ditambahkan"
+            )
+        }
         notes.forEach { note ->
             Row(
                 modifier = Modifier.padding(vertical = 2.dp),

@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.vclass.app.data.model.*
+import com.vclass.app.data.remote.RemoteConfigManager
 import com.vclass.app.ui.components.*
 import com.vclass.app.ui.theme.*
 import com.vclass.app.viewmodel.VClassViewModel
@@ -342,10 +343,9 @@ fun QuizAttemptButton(
 @Composable
 fun QuizBlockedCard(preventAccessReasons: List<String>, accessRules: List<String>) {
     val combinedStatus = (preventAccessReasons + accessRules).joinToString(" ").lowercase()
-    val hasNoQuestions = combinedStatus.contains("no questions")
-    val isClosed = combinedStatus.contains("closed") ||
-        combinedStatus.contains("close") ||
-        combinedStatus.contains("no more attempts")
+    val quizRules = RemoteConfigManager.current.quiz
+    val hasNoQuestions = quizRules.noQuestionsTexts.any { combinedStatus.contains(it.lowercase()) }
+    val isClosed = quizRules.closedTexts.any { combinedStatus.contains(it.lowercase()) }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -692,7 +692,7 @@ fun findQuizFinalGrade(response: GradesTableResponse, quizName: String): QuizFin
                     .trim()
                     .takeIf { it.isNotBlank() && it != "-" }
 
-                val maxGrade = extractMaxGrade(row.range?.content.orEmpty())
+                val maxGrade = extractMaxGradeFromRemoteConfig(row.range?.content.orEmpty())
 
                 if (grade != null) return QuizFinalGrade(grade = grade, maxGrade = maxGrade)
 
@@ -707,6 +707,25 @@ fun findQuizFinalGrade(response: GradesTableResponse, quizName: String): QuizFin
                 }
             }
         }
+    }
+
+    return null
+}
+
+private fun extractMaxGradeFromRemoteConfig(rangeContent: String): String? {
+    val rangeText = Html.fromHtml(rangeContent, Html.FROM_HTML_MODE_COMPACT)
+        .toString()
+        .trim()
+
+    if (rangeText.isBlank() || rangeText == "-") return null
+
+    RemoteConfigManager.current.quiz.rangeMaxPatterns.forEach { pattern ->
+        Regex(pattern, RegexOption.IGNORE_CASE)
+            .find(rangeText)
+            ?.groupValues
+            ?.getOrNull(1)
+            ?.replace(",", ".")
+            ?.let { return it }
     }
 
     return null
