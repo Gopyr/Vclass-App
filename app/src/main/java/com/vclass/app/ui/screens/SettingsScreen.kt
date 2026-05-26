@@ -519,7 +519,16 @@ private sealed class UpdateCheckResult {
 private suspend fun checkForUpdate(currentVersionCode: Int): UpdateCheckResult {
     return withContext(Dispatchers.IO) {
         runCatching {
-            val raw = URL(UPDATE_JSON_URL).readText()
+            val raw = URL("$UPDATE_JSON_URL?ts=${System.currentTimeMillis()}")
+                .openConnection()
+                .apply {
+                    useCaches = false
+                    setRequestProperty("Cache-Control", "no-cache")
+                    setRequestProperty("Pragma", "no-cache")
+                }
+                .getInputStream()
+                .bufferedReader()
+                .use { it.readText() }
             val json = JSONObject(raw)
             val changelogArray = json.optJSONArray("changelog")
             val changelog = buildList {
