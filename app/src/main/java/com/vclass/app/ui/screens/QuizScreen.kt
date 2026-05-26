@@ -32,7 +32,7 @@ fun QuizDetailScreen(
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var isStarting by remember { mutableStateOf(false) }
     var selectedAttempt by remember { mutableStateOf<QuizAttemptInfo?>(null) }
-    var finalGrade by remember { mutableStateOf<String?>(null) }
+    var finalGrade by remember { mutableStateOf<QuizFinalGrade?>(null) }
     var isGradeLoading by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
@@ -69,7 +69,7 @@ fun QuizDetailScreen(
         }
         if (finalGrade == null) {
             viewModel.repository.getAllGrades().onSuccess { response ->
-                finalGrade = findQuizFinalGrade(response, quiz.name)
+                    finalGrade = findQuizFinalGrade(response, quiz.name)
             }
         }
         isGradeLoading = false
@@ -149,7 +149,7 @@ fun QuizDetailScreen(
                             highestGrade?.let { grade ->
                                 item {
                                     Text(
-                                        text = "Highest grade: $grade / 100.00",
+                                        text = "Highest grade: ${grade.displayText}",
                                         style = MaterialTheme.typography.titleMedium,
                                         color = MaterialTheme.colorScheme.onBackground,
                                         modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp)
@@ -249,7 +249,7 @@ fun QuizInfoCard(
 @Composable
 fun AttemptSummaryCard(
     attempt: QuizAttemptInfo,
-    finalGrade: String?,
+    finalGrade: QuizFinalGrade?,
     isGradeLoading: Boolean,
     onReviewClick: () -> Unit
 ) {
@@ -292,7 +292,7 @@ fun AttemptSummaryCard(
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
                         text = when {
-                            finalGrade != null -> "$finalGrade / 100.00"
+                            finalGrade != null -> finalGrade.displayText
                             isGradeLoading -> "Mengambil nilai..."
                             else -> "Nilai akhir belum tersedia"
                         },
@@ -454,7 +454,7 @@ fun QuizReviewScreen(
     viewModel: VClassViewModel,
     attempt: QuizAttemptInfo,
     quizName: String,
-    finalGrade: String?,
+    finalGrade: QuizFinalGrade?,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -481,7 +481,7 @@ fun QuizReviewScreen(
             else -> attempt.state.orEmpty().ifBlank { "Unknown" }
         },
         attempt.timefinish?.takeIf { it > 0 }?.let { "Completed on" to it.toFormattedDate() },
-        "Grade" to (finalGrade?.let { "$it out of 100.00" }
+        "Grade" to (finalGrade?.displayReviewText
             ?: "Nilai akhir belum tersedia dari API")
     )
 
@@ -509,7 +509,7 @@ fun QuizReviewScreen(
                     )
                     Text(
                         text = "Attempt #${attempt.attempt} - Nilai: ${
-                            finalGrade ?: attempt.grade?.let { "%.1f".format(it) } ?: "-"
+                            finalGrade?.grade ?: attempt.grade?.let { "%.1f".format(it) } ?: "-"
                         }",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -666,7 +666,18 @@ fun extractReviewQuestionNumber(html: String): Int? {
         ?.toIntOrNull()
 }
 
-fun findQuizFinalGrade(response: GradesTableResponse, quizName: String): String? {
+data class QuizFinalGrade(
+    val grade: String,
+    val maxGrade: String?
+) {
+    val displayText: String
+        get() = if (!maxGrade.isNullOrBlank()) "$grade / $maxGrade" else grade
+
+    val displayReviewText: String
+        get() = if (!maxGrade.isNullOrBlank()) "$grade out of $maxGrade" else grade
+}
+
+fun findQuizFinalGrade(response: GradesTableResponse, quizName: String): QuizFinalGrade? {
     val normalizedQuizName = normalizeGradeText(quizName)
 
     response.tables.orEmpty().forEach { table ->
@@ -681,18 +692,38 @@ fun findQuizFinalGrade(response: GradesTableResponse, quizName: String): String?
                     .trim()
                     .takeIf { it.isNotBlank() && it != "-" }
 
-                if (grade != null) return grade
+                val maxGrade = extractMaxGrade(row.range?.content.orEmpty())
 
-                return Html.fromHtml(row.percentage?.content.orEmpty(), Html.FROM_HTML_MODE_COMPACT)
+                if (grade != null) return QuizFinalGrade(grade = grade, maxGrade = maxGrade)
+
+                val percentageGrade = Html.fromHtml(row.percentage?.content.orEmpty(), Html.FROM_HTML_MODE_COMPACT)
                     .toString()
                     .replace("%", "")
                     .trim()
                     .takeIf { it.isNotBlank() && it != "-" }
+
+                if (percentageGrade != null) {
+                    return QuizFinalGrade(grade = percentageGrade, maxGrade = "100.00")
+                }
             }
         }
     }
 
     return null
+}
+
+private fun extractMaxGrade(rangeContent: String): String? {
+    val rangeText = Html.fromHtml(rangeContent, Html.FROM_HTML_MODE_COMPACT)
+        .toString()
+        .trim()
+
+    if (rangeText.isBlank() || rangeText == "-") return null
+
+    return Regex("""(?:-|–|to)\s*([0-9]+(?:[.,][0-9]+)?)\s*$""", RegexOption.IGNORE_CASE)
+        .find(rangeText)
+        ?.groupValues
+        ?.getOrNull(1)
+        ?.replace(",", ".")
 }
 
 private fun normalizeGradeText(value: String): String {
