@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.1
+
+- Tombol cek update sekarang benar-benar membaca `releases/update.json` dari GitHub.
+- Dialog update membandingkan `versionCode` APK dengan metadata GitHub.
+- Patch notes update ditampilkan dari `update.json`.
+- Tombol Download update diarahkan ke APK di GitHub Release.
+- Label versi di Settings sekarang mengikuti versi APK yang terpasang.
+
 ## 1.0.0
 
 - Login native dengan penyimpanan akun opsional.

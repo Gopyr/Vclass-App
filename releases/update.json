@@ -1,14 +1,13 @@
 {
-  "versionCode": 1,
-  "versionName": "1.0.0",
-  "apkUrl": "https://github.com/Gopyr/Vclass-App/releases/download/v1.0.0/app-debug.apk",
+  "versionCode": 2,
+  "versionName": "1.0.1",
+  "apkUrl": "https://github.com/Gopyr/Vclass-App/releases/download/v1.0.1/app-debug.apk",
   "mandatory": false,
   "changelog": [
-    "Login native dengan penyimpanan akun opsional",
-    "Switch akun dan logout dari halaman Profil",
-    "Grade quiz memakai nilai akhir dari grade report",
-    "Review quiz diurutkan dari Question 1 sampai selesai",
-    "Forum cutoff tampil read-only",
-    "Settings menampilkan update app dan patch info"
+    "Cek update sekarang membaca update.json dari GitHub",
+    "App membandingkan versionCode APK dengan metadata update",
+    "Patch notes tampil langsung di dialog update",
+    "Tombol Download membuka APK dari GitHub Release",
+    "Label versi di Settings mengikuti versi APK terpasang"
   ]
 }
