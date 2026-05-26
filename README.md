@@ -27,7 +27,7 @@ Contoh struktur:
 {
   "versionCode": 1,
   "versionName": "1.0.0",
-  "apkUrl": "https://github.com/Gopyr/Vclass-App/releases/download/v1.0.0/app-release.apk",
+  "apkUrl": "https://github.com/Gopyr/Vclass-App/releases/download/v1.0.0/app-debug.apk",
   "mandatory": false,
   "changelog": [
     "Login native dan simpan akun",
