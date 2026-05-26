@@ -7,7 +7,7 @@
     "Cek update sekarang membaca update.json dari GitHub",
     "App membandingkan versionCode APK dengan metadata update",
     "Patch notes tampil langsung di dialog update",
-    "Tombol Download membuka APK dari GitHub Release",
+    "Tombol Download membuka APK aman dari folder releases di GitHub",
     "Label versi di Settings mengikuti versi APK terpasang"
   ]
 }
