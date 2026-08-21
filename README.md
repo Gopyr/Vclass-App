@@ -1,67 +1,57 @@
-# V-Class Gunadarma
+# V-Class Gunadarma for Android
 
-Android native app untuk membantu akses V-Class Gunadarma dari HP.
+Vclass-App is an Android companion app for V-Class Gunadarma. It brings course information, forums, quizzes, grades, calendar items, assignments, account settings, and selected notifications into a Jetpack Compose interface.
 
-## Fitur
+## Current status
 
-- Login native dengan token Moodle.
-- Simpan akun dan switch akun dari halaman Profil.
-- Dashboard tugas, course, quiz, forum, kalender, profil, dan pengaturan.
-- Quiz info, grade final, review attempt, dan status quiz tertutup/soal belum tersedia.
-- Forum read-only untuk forum yang melewati batas posting.
-- Settings berisi cek update dan patch info.
+This is a personal/community project and should be treated as an evolving app rather than an official university product. The application depends on the availability and behavior of the upstream V-Class services. Test accounts and real student data should never be committed to the repository.
 
-## Update App
+## Features
 
-Rencana update memakai GitHub Releases:
+| Area | Description |
+| --- | --- |
+| Dashboard | Course and deadline overview |
+| Courses | Course detail and assignment navigation |
+| Forums | Read forum threads and replies |
+| Quizzes | Read quiz information using configurable matching rules |
+| Grades | View available grade information |
+| Calendar | Track academic events and deadlines |
+| Remote configuration | Update selected quiz/forum rules and patch notes through JSON metadata |
+| Updates | Public release metadata can be consumed by the app's updater |
 
-- APK disimpan sebagai release asset.
-- Metadata update disimpan di `releases/update.json`.
-- App membaca `update.json`, membandingkan `versionCode`, lalu menampilkan patch notes.
+## Build requirements
 
-## Remote Config
+| Requirement | Version |
+| --- | --- |
+| Android Studio | Hedgehog or newer recommended |
+| JDK | 17 |
+| Android compile SDK | 36 |
+| Minimum Android version | API 24 |
 
-Fix kecil untuk rule parser quiz/forum dapat dikirim lewat:
+The project includes the Gradle wrapper, so a separate Gradle installation is not required.
 
-```text
-releases/remote_config.json
+## Build the debug APK
+
+```bash
+./gradlew assembleDebug
 ```
 
-Contoh yang bisa diubah tanpa upload APK:
+The APK is written to `app/build/outputs/apk/debug/app-debug.apk`. Install it on a test device or emulator with an appropriate Android debugging setup.
 
-- pola range nilai quiz
-- teks status quiz tertutup
-- teks status quiz tanpa soal
-- teks forum read-only/cutoff
-- patch notes ringan yang tampil di Settings
+## Configuration and data
 
-## Release Metadata
+The app reads selected behavior from `releases/remote_config.json` and update metadata from `releases/update.json`. These files are public and must contain only non-sensitive configuration. Review changes carefully because a remote configuration update can change how content is classified in the app without shipping a new APK.
 
-Contoh struktur:
+Network access and upstream login behavior are implementation details of the current app. Do not add credentials, session cookies, or private API responses to source control.
 
-```json
-{
-  "versionCode": 1,
-  "versionName": "1.0.0",
-  "apkUrl": "https://github.com/Gopyr/Vclass-App/releases/download/v1.0.0/app-debug.apk",
-  "mandatory": false,
-  "changelog": [
-    "Login native dan simpan akun",
-    "Grade quiz lebih akurat",
-    "Forum read-only"
-  ]
-}
-```
+## Release checklist
 
-## Build
+Before publishing a release, update `versionCode` and `versionName`, review `CHANGELOG.md`, build and install the APK, verify the update metadata, and confirm that the release artifact does not contain test credentials or private data. Release signing should use a proper private key outside the repository; the debug signing configuration is for development only.
 
-```powershell
-$env:JAVA_HOME='C:\Program Files\Android\Android Studio\jbr'
-.\gradlew.bat :app:assembleDebug
-```
+## Known limitations
 
-APK debug akan ada di:
+The app is not affiliated with or endorsed by Universitas Gunadarma unless explicitly stated by the project owner. Upstream APIs may change without notice, and some features may require an authenticated V-Class account. The repository currently does not promise compatibility with every Android device or V-Class deployment.
 
-```text
-app/build/outputs/apk/debug/app-debug.apk
-```
+## License
+
+Released under the [MIT License](LICENSE).
