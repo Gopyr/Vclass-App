@@ -1,57 +1,57 @@
-# V-Class Gunadarma for Android
+# V-Class Gunadarma untuk Android
 
-Vclass-App is an Android companion app for V-Class Gunadarma. It brings course information, forums, quizzes, grades, calendar items, assignments, account settings, and selected notifications into a Jetpack Compose interface.
+Vclass-App adalah aplikasi pendamping Android untuk V-Class Gunadarma. Ia membawa info mata kuliah, forum, kuis, nilai, kalender akademik, tugas, pengaturan akun, dan sebagian notifikasi ke antarmuka Jetpack Compose.
 
-## Current status
+## Status saat ini
 
-This is a personal/community project and should be treated as an evolving app rather than an official university product. The application depends on the availability and behavior of the upstream V-Class services. Test accounts and real student data should never be committed to the repository.
+Ini proyek personal/komunitas, bukan produk resmi kampus. Aplikasinya bergantung pada ketersediaan dan perilaku layanan V-Class di hulu, jadi bisa berubah kapan saja. Akun test dan data mahasiswa asli tidak boleh masuk ke repository.
 
-## Features
+## Fitur
 
-| Area | Description |
+| Area | Keterangan |
 | --- | --- |
-| Dashboard | Course and deadline overview |
-| Courses | Course detail and assignment navigation |
-| Forums | Read forum threads and replies |
-| Quizzes | Read quiz information using configurable matching rules |
-| Grades | View available grade information |
-| Calendar | Track academic events and deadlines |
-| Remote configuration | Update selected quiz/forum rules and patch notes through JSON metadata |
-| Updates | Public release metadata can be consumed by the app's updater |
+| Dashboard | Ringkasan mata kuliah dan deadline |
+| Courses | Detail mata kuliah dan navigasi tugas |
+| Forums | Membaca thread dan balasan forum |
+| Quizzes | Membaca info kuis lewat aturan pencocokan yang bisa dikonfigurasi |
+| Grades | Melihat nilai yang tersedia |
+| Calendar | Melacak event dan deadline akademik |
+| Remote configuration | Aturan kuis/forum dan patch note bisa diupdate lewat JSON metadata |
+| Updates | Metadata rilis publik bisa dibaca updater aplikasi |
 
-## Build requirements
+## Kebutuhan build
 
-| Requirement | Version |
+| Kebutuhan | Versi |
 | --- | --- |
-| Android Studio | Hedgehog or newer recommended |
+| Android Studio | Hedgehog atau lebih baru |
 | JDK | 17 |
 | Android compile SDK | 36 |
-| Minimum Android version | API 24 |
+| Android minimum | API 24 |
 
-The project includes the Gradle wrapper, so a separate Gradle installation is not required.
+Project sudah menyertakan Gradle wrapper, jadi tidak perlu install Gradle terpisah.
 
-## Build the debug APK
+## Build APK debug
 
 ```bash
 ./gradlew assembleDebug
 ```
 
-The APK is written to `app/build/outputs/apk/debug/app-debug.apk`. Install it on a test device or emulator with an appropriate Android debugging setup.
+APK-nya keluar di `app/build/outputs/apk/debug/app-debug.apk`. Install ke device atau emulator test.
 
-## Configuration and data
+## Konfigurasi dan data
 
-The app reads selected behavior from `releases/remote_config.json` and update metadata from `releases/update.json`. These files are public and must contain only non-sensitive configuration. Review changes carefully because a remote configuration update can change how content is classified in the app without shipping a new APK.
+Aplikasi membaca sebagian perilaku dari `releases/remote_config.json` dan metadata update dari `releases/update.json`. Kedua file itu publik dan hanya boleh berisi konfigurasi non-sensitif. Review perubahannya dengan teliti karena update remote config bisa mengubah cara konten diklasifikasi tanpa perlu APK baru.
 
-Network access and upstream login behavior are implementation details of the current app. Do not add credentials, session cookies, or private API responses to source control.
+Akses jaringan dan perilaku login ke layanan hulu adalah detail implementasi. Jangan menaruh kredensial, session cookie, atau respons API privat ke source control.
 
-## Release checklist
+## Checklist rilis
 
-Before publishing a release, update `versionCode` and `versionName`, review `CHANGELOG.md`, build and install the APK, verify the update metadata, and confirm that the release artifact does not contain test credentials or private data. Release signing should use a proper private key outside the repository; the debug signing configuration is for development only.
+Sebelum rilis: update `versionCode` dan `versionName`, review `CHANGELOG.md`, build dan install APK, verifikasi metadata update, dan pastikan artifact rilis tidak membawa kredensial test atau data privat. Signing rilis harus pakai private key di luar repo; signing debug hanya untuk development.
 
-## Known limitations
+## Keterbatasan
 
-The app is not affiliated with or endorsed by Universitas Gunadarma unless explicitly stated by the project owner. Upstream APIs may change without notice, and some features may require an authenticated V-Class account. The repository currently does not promise compatibility with every Android device or V-Class deployment.
+Aplikasi ini tidak berafiliasi dan tidak didukung Universitas Gunadarma kecuali dinyatakan eksplisit oleh pemilik proyek. API hulu bisa berubah tanpa pemberitahuan, sebagian fitur butuh akun V-Class terautentikasi, dan repo ini tidak menjamin kompatibilitas dengan semua device atau deployment V-Class.
 
-## License
+## Lisensi
 
-Released under the [MIT License](LICENSE).
+[MIT License](LICENSE)
